@@ -89,13 +89,15 @@ class ClientCacheFilter implements ClientCacheInterface
         $lastModified = $this->getLastTimeModified($key);
         $modifiedSince = isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : 0;
 
-        header('Last-Modified: '. $lastModified);
-
-        if ($modifiedSince >= $lastModified)
-        {
-            header('HTTP/1.0 304 Not Modified');
-            exit;
-        }
+				header("Last-Modified: " . gmdate("D, d M Y H:i:s", $lastModified) ." GMT");
+				
+				header('Cache-Control: public');
+				
+				if (@strtotime($modifiedSince) == $lastModified)
+				{
+		       header("HTTP/1.1 304 Not Modified");
+		       exit;
+				}
 
         return $this->cache->get($key);
     }
